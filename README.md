@@ -68,7 +68,7 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=/usr/local/sbin/iptables-restore-onboot.sh
-TimeoutStartSec=360
+TimeoutStartSec=30
 RemainAfterExit=yes
 
 [Install]
