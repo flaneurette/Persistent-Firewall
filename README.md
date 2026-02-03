@@ -1,6 +1,7 @@
-# Persistent firewall
+# Persistent Linux Firewall
 
-Some services, like Tailscale and fail2ban, can flush or overwrite iptables rules on startup or reinstallment which leads to empy iptables. Quite risky! On our system, Tailscale clears iptables during its initialization before it reads its own `nf=off` preference - there is no way to prevent this. The solution is a systemd service that restores your rules *after* Tailscale has started.
+Some services, like Tailscale and fail2ban, can flush or overwrite iptables rules on startup or reinstallment which leads to empy iptables. Quite risky! On our system, 
+Tailscale clears iptables during its initialization before it reads its own `nf=off` preference - there is no way to prevent this.
 
 The solution is a custom systemd program that runs after boot, and makes sure that the iptables rules are restored, regardless of the programs running before it.
 
@@ -10,9 +11,17 @@ The solution is a custom systemd program that runs after boot, and makes sure th
 
 `iptables-restore-onboot` restores them again.
 
+However, sometimes `netfilter-persistent` doesn't always work properly.
+
 ## Saving rules
 
 Whenever you change your iptables rules, save them:
+
+```
+sudo netfilter-persistent save
+```
+
+Then to be absolutely certain:
 
 ```bash
 sudo iptables-save > /etc/iptables/rules.v4
@@ -88,7 +97,6 @@ sudo iptables -I INPUT 2 -s 203.0.113.99 -m comment --comment "CANARY-ADMIN" -j 
 The above adds a “dummy rule” as a canary to check whether your iptables have been wiped or not.
 
 > Note: 203.0.113.0/24 and 2001:db8::/32 are TEST-NET ranges - they're reserved and will never be routed on the internet, so they're perfect for canaries.
-
 
 ```
 sudo iptables-save > /etc/iptables/rules.v4
