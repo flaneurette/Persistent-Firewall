@@ -15,7 +15,8 @@ The solution is a custom systemd program that runs after boot, and makes sure th
 Whenever you change your iptables rules, save them:
 
 ```bash
-sudo netfilter-persistent save
+sudo iptables-save > /etc/iptables/rules.v4
+sudo ip6tables-save > /etc/iptables/rules.v6
 ```
 
 This writes your current rules to `/etc/iptables/rules.v4` and `/etc/iptables/rules.v6`.
@@ -122,7 +123,6 @@ if [ $restore_needed -eq 1 ]; then
     
     echo "$(date): Rules restored successfully" >> "$LOG"
 fi
-
 ```
 
 Then:
