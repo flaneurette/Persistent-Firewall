@@ -90,6 +90,10 @@ sudo systemctl start iptables-restore-onboot.service (might be slow!)
 
 # Self-healing crontab
 
+A self-healing crontab is very useful, this gives an extra layer of protection. Although rare, systemd can fail. You might be locked out, or something else causes an issue, like kernel ordering of executing is mixed up or deferred.
+
+To mitigate this we can create a crontab that runs every 5 minutes, regardless of what is going on, and heals the firewall when it detects it was flushed.
+
 Run this first:
 
 ```
