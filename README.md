@@ -76,7 +76,7 @@ sudo systemctl start iptables-restore-onboot.service
 ```
 
 
-# Extra measure, most secure: self-healing crontab
+# Self-healing crontab
 
 Run this first:
 
