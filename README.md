@@ -104,7 +104,7 @@ Paste:
 ```
 #!/bin/bash
 # Check if the dummy rule exists
-#!/bin/bash
+
 LOG=/var/log/iptables-check.log
 
 restore_needed=0
