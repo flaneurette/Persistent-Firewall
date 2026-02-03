@@ -81,7 +81,7 @@ sudo systemctl start iptables-restore-onboot.service
 Run this first:
 
 ```
-sudo iptables -A INPUT -m comment --comment "DUMMY-CHECK" -j ACCEPT
+sudo iptables -A INPUT -m comment --comment "DUMMY-CHECK" -j DROP
 ```
 
 The above adds a “dummy rule” as a canary to check whether your iptables have been wiped or not.
@@ -100,7 +100,7 @@ Paste:
 ```
 #!/bin/bash
 # Check if the dummy rule exists
-if ! iptables -C INPUT -m comment --comment "DUMMY-CHECK" -j ACCEPT &>/dev/null; then
+if ! iptables -C INPUT -m comment --comment "DUMMY-CHECK" -j DROP &>/dev/null; then
     echo "$(date): Dummy rule missing, restoring iptables..."
     iptables-restore < /etc/iptables/rules.v4
     ip6tables-restore < /etc/iptables/rules.v6
