@@ -8,7 +8,8 @@ In this document we are going to build a triple-layered defense:
 
 In this way, we do not have to rely on packages such as `UFW`, `netfilter-persistent` nor `nftables`. Our method is rather safe, because there are few surprises (no mysterious flushing of tables). Even if you are locked out, a `crontab` will restore the tables properly.
 
-> NOTE: if you use `ipset`, then things will be more complicated as you need to save each `ipset`, otherwise iptables cannot restore properly.
+> NOTE: if you use `ipset`, then things will be more complicated as you need to restore each `ipset` on boot as well, otherwise iptables cannot restore properly.
+
 > NOTE: As of yet, this readme does not support `ipset`. I need to update it soon to include it.
 
 ### Why?
