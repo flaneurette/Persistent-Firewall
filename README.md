@@ -141,10 +141,15 @@ Example for `tailscale`. Replace your `service` if you want to check another one
 
 `nano /usr/local/sbin/iptables-restore-onboot.sh`
 
-Paste:
+Edit ALERT_EMAIL and then paste:
 
 ```bash
 #!/bin/bash
+
+ALERT_EMAIL="your@email.com"
+HOSTNAME=$(hostname)
+ERRORS=""
+
 # Wait for tailscaled to start, timeout after 75 seconds
 for i in $(seq 1 15); do
     if systemctl is-active --quiet tailscaled; then
@@ -154,13 +159,42 @@ for i in $(seq 1 15); do
     sleep 5
 done
 
-# Restore regardless of whether tailscaled started or not
-iptables-restore < /etc/iptables/rules.v4
-ip6tables-restore < /etc/iptables/rules.v6
+# IF you have `ipsets`, uncomment this block:
+# Restore ipsets first - iptables rules may depend on these sets existing
+# if [ -f /etc/iptables/ipsets.conf ]; then
+#    ipset restore < /etc/iptables/ipsets.conf 2>&1
+#    if [ $? -ne 0 ]; then
+#        ERRORS="${ERRORS}\n[FAILED] ipset restore from /etc/iptables/ipsets.conf"
+#    fi
+#else
+#    ERRORS="${ERRORS}\n[WARNING] /etc/iptables/ipsets.conf not found - ipsets not restored"
+#fi
+
+# Restore iptables rules
+iptables-restore < /etc/iptables/rules.v4 2>&1
+if [ $? -ne 0 ]; then
+    ERRORS="${ERRORS}\n[FAILED] iptables-restore from /etc/iptables/rules.v4"
+fi
+
+# Restore ip6tables rules
+ip6tables-restore < /etc/iptables/rules.v6 2>&1
+if [ $? -ne 0 ]; then
+    ERRORS="${ERRORS}\n[FAILED] ip6tables-restore from /etc/iptables/rules.v6"
+fi
+
+# Send alert email if any errors occurred
+if [ -n "$ERRORS" ]; then
+    echo -e "Subject: [ALERT] ${HOSTNAME} - iptables restore failed on boot\n\nThe following errors occurred during iptables restore on ${HOSTNAME}:\n${ERRORS}\n\nPlease check your firewall rules immediately." \
+        | sendmail "$ALERT_EMAIL"
+fi
 
 # Check if fail2ban is running and restart it to recreate its chains
 if systemctl is-active --quiet fail2ban; then
-   systemctl restart fail2ban
+    systemctl restart fail2ban
+    if [ $? -ne 0 ]; then
+        echo -e "Subject: [ALERT] ${HOSTNAME} - fail2ban restart failed after iptables restore\n\nfail2ban failed to restart on ${HOSTNAME} after iptables restore." \
+            | sendmail "$ALERT_EMAIL"
+    fi
 fi
 ```
 
