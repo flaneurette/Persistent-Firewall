@@ -87,6 +87,21 @@ apt purge nftables
 
 To prevent Ubuntu from pulling it in again. (happened to me, and nftables flushed iptables yet again.)
 
+### Edit fail2ban
+
+Fail2ban uses nftables by default. We don't want that anymore. So add this:
+
+```
+nano /etc/fail2ban/jail.local
+```
+
+Add below `[DEFAULT]`:
+
+```
+[DEFAULT]
+banaction = iptables-multiport
+banaction_allports = iptables-allports
+```
 
 And start using regular `iptables` again.
 
