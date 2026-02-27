@@ -137,6 +137,9 @@ set -e
 # Check ipset table. Only uncomment if you use custom ipsets.
 # ipset create YOUR_IP_SET_TABLE hash:ip -exist 2>/dev/null || true
 
+# Only uncomment if you use custom ipsets.
+# ipset save > /etc/iptables/ipsets.conf
+
 iptables-save > /etc/iptables/rules.v4.bak.firewall
 ip6tables-save > /etc/iptables/rules.v6.bak.firewall
 
