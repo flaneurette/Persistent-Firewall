@@ -5,12 +5,9 @@ In this document we are going to build a triple-layered defense:
 - a persistent firewall(initial boot)
 - a systemd service (post-service restore)
 - a cron canary (continuous monitoring every 5 min)
+- ipset support
 
 In this way, we do not have to rely on packages such as `UFW`, `netfilter-persistent` nor `nftables`. Our method is rather safe, because there are few surprises (no mysterious flushing of tables). Even if you are locked out, a `crontab` will restore the tables properly.
-
-> NOTE: if you use `ipset`, then things will be more complicated as you need to restore each `ipset` on boot as well, otherwise iptables cannot restore properly.
-
-> NOTE: As of yet, this readme does not support `ipset`. I need to update it soon to include it.
 
 ### Why?
 
@@ -103,8 +100,9 @@ Add below `[DEFAULT]`
 
 ```
 [DEFAULT]
-banaction = iptables-multiport
-banaction_allports = iptables-allports
+# start using ipset also, which is much better.
+banaction = iptables-ipset[type=multiport]
+banaction_allports = iptables-ipset[type=allports]
 ```
 
 Then:
@@ -112,6 +110,17 @@ Then:
 ```
 systemctl restart fail2ban
 ```
+
+IMPORTANT: If you have a custom `ipset`, you need to be very careful. You must add this at the top of in any script that restores iptables rules. 
+If an ipset does not exist, and iptables loads it, iptables might fail or flush. Hence, we check:
+
+```
+ipset create YOUR_IP_SET_TABLE hash:ip -exist
+```
+
+To find your ipsets: `ipset list -t`
+
+### Custom firewall script
 
 Now start using regular `iptables` again.
 
@@ -124,6 +133,9 @@ Paste:
 ```
 #!/bin/bash
 set -e
+
+# Check ipset table. Only uncomment if you use custom ipsets.
+# ipset create YOUR_IP_SET_TABLE hash:ip -exist 2>/dev/null || true
 
 iptables-save > /etc/iptables/rules.v4.bak.firewall
 ip6tables-save > /etc/iptables/rules.v6.bak.firewall
