@@ -348,6 +348,12 @@ if [ $restore_needed -eq 1 ]; then
            mail -s "Fail2ban flushed the iptables?!" -r "$FROM" "$EMAIL"
        fi
     fi
+    
+    # Post-fail2ban ipset saving.
+    if [ "$IPSET_USE" == 1 ]; then
+        ipset save > /etc/iptables/ipsets.conf
+    fi
+    
 fi
 
 # Check if the service is enabled on boot
@@ -356,7 +362,7 @@ if systemctl is-enabled --quiet "$SERVICE"; then
 else
     echo "$(date) - $SERVICE is NOT enabled, enabling" >> "$LOG"
     systemctl enable "$SERVICE"
-fi
+fi  
 
 # Check if the service is running
 if systemctl is-active --quiet "$SERVICE"; then
