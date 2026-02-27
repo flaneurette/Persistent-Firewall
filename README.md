@@ -183,7 +183,7 @@ ALERT_EMAIL="your@email.com"
 HOSTNAME=$(hostname)
 ERRORS=""
 
-# Do you use ipsets? 1 for true, 0 for false.
+# Do you use ipsets or fail2ban? 1 for true, 0 for false.
 # You MUST be certain ipsets exists. Otherwise: failure.
 
 IPSET_USE=0
@@ -317,7 +317,7 @@ SERVICE="iptables-restore-onboot.service"
 CANARY_IP="203.0.113.99"
 CANARY_COMMENT="CANARY-ADMIN"
 
-# Do you use ipsets? 1 for true, 0 for false.
+# Do you use ipsets or fail2ban? 1 for true, 0 for false.
 # You MUST be certain ipsets exists. Otherwise: failure.
 
 IPSET_USE=0
