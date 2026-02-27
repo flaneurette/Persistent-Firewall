@@ -116,6 +116,8 @@ If an ipset does not exist, and iptables loads it, iptables might fail or flush.
 
 ```
 ipset create YOUR_IP_SET_TABLE hash:ip -exist
+# OR:
+ipset create YOUR_IP_SET_TABLE hash:net -exist
 ```
 
 To find your custom ipsets: `ipset list -t`
@@ -136,6 +138,8 @@ set -e
 
 # Check ipset table. Only uncomment if you use custom ipsets.
 # ipset create YOUR_IP_SET_TABLE hash:ip -exist 2>/dev/null || true
+# OR:
+# ipset create YOUR_IP_SET_TABLE hash:net -exist 2>/dev/null || true
 
 # Only uncomment if you use custom ipsets or use fail2ban:
 # ipset save > /etc/iptables/ipsets.conf
