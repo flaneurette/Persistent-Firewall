@@ -76,6 +76,7 @@ sudo apt remove netfilter-persistent iptables-persistent
 # Be sure to remove these too:
 sudo apt remove ubuntu-standard bpfcc-tools bpftrace bpfmon bpfcc-lua
 sudo apt remove ubuntu-kernel-accessories
+apt autoremove
 ```
 
 Then quickly:
