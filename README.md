@@ -111,14 +111,14 @@ Then:
 systemctl restart fail2ban
 ```
 
-IMPORTANT: If you have a custom `ipset`, you need to be very careful. You must add this at the top of in any script that restores iptables rules. 
+IMPORTANT: If you have a custom `ipset` tables, you need to be very careful. You must add this at the top of in any script that restores iptables rules. 
 If an ipset does not exist, and iptables loads it, iptables might fail or flush. Hence, we check:
 
 ```
 ipset create YOUR_IP_SET_TABLE hash:ip -exist
 ```
 
-To find your ipsets: `ipset list -t`
+To find your custom ipsets: `ipset list -t`
 
 ### Custom firewall script
 
