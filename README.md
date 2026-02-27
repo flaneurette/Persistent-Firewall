@@ -103,6 +103,12 @@ banaction = iptables-multiport
 banaction_allports = iptables-allports
 ```
 
+Then:
+
+```
+systemctl restart fail2ban
+```
+
 Now start using regular `iptables` again.
 
 Create:
