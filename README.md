@@ -137,7 +137,7 @@ set -e
 # Check ipset table. Only uncomment if you use custom ipsets.
 # ipset create YOUR_IP_SET_TABLE hash:ip -exist 2>/dev/null || true
 
-# Only uncomment if you use custom ipsets.
+# Only uncomment if you use custom ipsets or use fail2ban:
 # ipset save > /etc/iptables/ipsets.conf
 
 iptables-save > /etc/iptables/rules.v4.bak.firewall
@@ -192,7 +192,7 @@ for i in $(seq 1 15); do
     sleep 5
 done
 
-# IF you have `ipsets`, uncomment this block:
+# IF you have `ipsets` OR use fail2ban, uncomment this block:
 # Restore ipsets first - iptables rules may depend on these sets existing
 # if [ -f /etc/iptables/ipsets.conf ]; then
 #    ipset restore < /etc/iptables/ipsets.conf 2>&1
@@ -306,6 +306,11 @@ SERVICE="iptables-restore-onboot.service"
 CANARY_IP="203.0.113.99"
 CANARY_COMMENT="CANARY-ADMIN"
 
+# Do you use ipsets? 1 for true, 0 for false.
+# You MUST be certain ipsets exists. Otherwise: failure.
+
+IPSET_USE=0
+
 touch "$LOG"
 chmod 600 "$LOG"
 
@@ -319,10 +324,14 @@ fi
 
 if [ $restore_needed -eq 1 ]; then
     echo "$(date): Canary missing - restoring iptables..." >> "$LOG"
-    
+   
+	if [ "$IPSET_USE" == 1 ]; then
+		ipset restore < /etc/iptables/ipsets.conf 2>&1
+	fi
+	
     [ -f /etc/iptables/rules.v4 ] && iptables-restore < /etc/iptables/rules.v4
     [ -f /etc/iptables/rules.v6 ] && ip6tables-restore < /etc/iptables/rules.v6
-    
+	
     echo "$(date): Rules restored successfully" >> "$LOG"
 	
 	# Check if fail2ban is running and restart it to recreate its chains
