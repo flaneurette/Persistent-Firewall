@@ -89,7 +89,7 @@ To prevent Ubuntu from pulling it in again. (happened to me, and nftables flushe
 
 ### Edit fail2ban
 
-Fail2ban uses nftables by default. We don't want that anymore. So add this:
+Fail2ban uses nftables by default. We don't want that anymore.
 
 ```
 nano /etc/fail2ban/jail.local
