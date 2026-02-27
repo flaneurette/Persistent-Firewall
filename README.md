@@ -197,15 +197,15 @@ for i in $(seq 1 15); do
 done
 
 if [ "$IPSET_USE" == 1 ]; then
-	# Restore ipsets first - iptables rules may depend on these sets existing
-	if [ -f /etc/iptables/ipsets.conf ]; then
-		ipset restore < /etc/iptables/ipsets.conf 2>&1
-		if [ $? -ne 0 ]; then
-			ERRORS="${ERRORS}\n[FAILED] ipset restore from /etc/iptables/ipsets.conf"
-		fi
-	else
-		ERRORS="${ERRORS}\n[WARNING] /etc/iptables/ipsets.conf not found - ipsets not restored"
-	fi
+    # Restore ipsets first - iptables rules may depend on these sets existing
+    if [ -f /etc/iptables/ipsets.conf ]; then
+        ipset restore < /etc/iptables/ipsets.conf 2>&1
+        if [ $? -ne 0 ]; then
+            ERRORS="${ERRORS}\n[FAILED] ipset restore from /etc/iptables/ipsets.conf"
+        fi
+    else
+        ERRORS="${ERRORS}\n[WARNING] /etc/iptables/ipsets.conf not found - ipsets not restored"
+    fi
 fi
 
 # Restore iptables rules
@@ -330,23 +330,23 @@ fi
 if [ $restore_needed -eq 1 ]; then
     echo "$(date): Canary missing - restoring iptables..." >> "$LOG"
    
-	if [ "$IPSET_USE" == 1 ]; then
-		ipset restore < /etc/iptables/ipsets.conf 2>&1
-	fi
-	
+    if [ "$IPSET_USE" == 1 ]; then
+        ipset restore < /etc/iptables/ipsets.conf 2>&1
+    fi
+    
     [ -f /etc/iptables/rules.v4 ] && iptables-restore < /etc/iptables/rules.v4
     [ -f /etc/iptables/rules.v6 ] && ip6tables-restore < /etc/iptables/rules.v6
-	
+    
     echo "$(date): Rules restored successfully" >> "$LOG"
-	
-	# Check if fail2ban is running and restart it to recreate its chains
-	if systemctl is-active --quiet fail2ban; then
-	   systemctl restart fail2ban
-	   if ! iptables -C INPUT -s "$CANARY_IP" -m comment --comment "$CANARY_COMMENT" -j DROP &>/dev/null; then
-		   echo "$(date): Fail2ban flushed the iptables?!" >> "$LOG"
-		   mail -s "Fail2ban flushed the iptables?!" -r "$FROM" "$EMAIL"
-	   fi
-	fi
+    
+    # Check if fail2ban is running and restart it to recreate its chains
+    if systemctl is-active --quiet fail2ban; then
+       systemctl restart fail2ban
+       if ! iptables -C INPUT -s "$CANARY_IP" -m comment --comment "$CANARY_COMMENT" -j DROP &>/dev/null; then
+           echo "$(date): Fail2ban flushed the iptables?!" >> "$LOG"
+           mail -s "Fail2ban flushed the iptables?!" -r "$FROM" "$EMAIL"
+       fi
+    fi
 fi
 
 # Check if the service is enabled on boot
