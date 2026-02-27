@@ -73,6 +73,9 @@ iptables --version
 sudo systemctl disable netfilter-persistent
 sudo systemctl mask netfilter-persistent
 sudo apt remove netfilter-persistent iptables-persistent
+
+# Be sure to remove these too:
+apt remove ubuntu-standard bpfcc-tools bpftrace bpfmon bpfcc-lua
 ```
 
 Then quickly:
