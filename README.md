@@ -163,13 +163,6 @@ Whenever you change your iptables rules, save them:
 
 `sudo firewall`
 
-or:
-
-```bash
-sudo iptables-save > /etc/iptables/rules.v4
-sudo ip6tables-save > /etc/iptables/rules.v6
-```
-
 This writes your current rules to `/etc/iptables/rules.v4` and `/etc/iptables/rules.v6`.
 
 ## The restore script
