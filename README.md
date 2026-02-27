@@ -200,7 +200,7 @@ done
 if [ "$IPSET_USE" == 1 ]; then
     # Restore ipsets first - iptables rules may depend on these sets existing
     if [ -f /etc/iptables/ipsets.conf ]; then
-        ipset restore < /etc/iptables/ipsets.conf 2>&1
+        ipset restore -exist < /etc/iptables/ipsets.conf 2>&1
         if [ $? -ne 0 ]; then
             ERRORS="${ERRORS}\n[FAILED] ipset restore from /etc/iptables/ipsets.conf"
         fi
@@ -234,6 +234,11 @@ if systemctl is-active --quiet fail2ban; then
         echo -e "Subject: [ALERT] ${HOSTNAME} - fail2ban restart failed after iptables restore\n\nfail2ban failed to restart on ${HOSTNAME} after iptables restore." \
             | sendmail "$ALERT_EMAIL"
     fi
+fi
+
+# Post-fail2ban ipset saving.
+if [ "$IPSET_USE" == 1 ]; then
+    ipset save > /etc/iptables/ipsets.conf
 fi
 ```
 
