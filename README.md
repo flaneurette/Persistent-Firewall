@@ -49,7 +49,6 @@ A lot of things can and will go wrong. So we designed the following `firewall in
 ### Proceed with implementation
 
 ```
-
 sudo apt install mailutils fail2ban
 
 # Disable nftables
@@ -75,7 +74,8 @@ sudo systemctl mask netfilter-persistent
 sudo apt remove netfilter-persistent iptables-persistent
 
 # Be sure to remove these too:
-apt remove ubuntu-standard bpfcc-tools bpftrace bpfmon bpfcc-lua
+sudo apt remove ubuntu-standard bpfcc-tools bpftrace bpfmon bpfcc-lua
+sudo apt remove ubuntu-kernel-accessories
 ```
 
 Then quickly:
