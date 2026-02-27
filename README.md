@@ -183,6 +183,10 @@ ALERT_EMAIL="your@email.com"
 HOSTNAME=$(hostname)
 ERRORS=""
 
+# Do you use ipsets? 1 for true, 0 for false.
+# You MUST be certain ipsets exists. Otherwise: failure.
+IPSET_USE=0
+
 # Wait for tailscaled to start, timeout after 75 seconds
 for i in $(seq 1 15); do
     if systemctl is-active --quiet tailscaled; then
@@ -192,16 +196,17 @@ for i in $(seq 1 15); do
     sleep 5
 done
 
-# IF you have `ipsets` OR use fail2ban, uncomment this block:
-# Restore ipsets first - iptables rules may depend on these sets existing
-# if [ -f /etc/iptables/ipsets.conf ]; then
-#    ipset restore < /etc/iptables/ipsets.conf 2>&1
-#    if [ $? -ne 0 ]; then
-#        ERRORS="${ERRORS}\n[FAILED] ipset restore from /etc/iptables/ipsets.conf"
-#    fi
-#else
-#    ERRORS="${ERRORS}\n[WARNING] /etc/iptables/ipsets.conf not found - ipsets not restored"
-#fi
+if [ "$IPSET_USE" == 1 ]; then
+	# Restore ipsets first - iptables rules may depend on these sets existing
+	if [ -f /etc/iptables/ipsets.conf ]; then
+		ipset restore < /etc/iptables/ipsets.conf 2>&1
+		if [ $? -ne 0 ]; then
+			ERRORS="${ERRORS}\n[FAILED] ipset restore from /etc/iptables/ipsets.conf"
+		fi
+	else
+		ERRORS="${ERRORS}\n[WARNING] /etc/iptables/ipsets.conf not found - ipsets not restored"
+	fi
+fi
 
 # Restore iptables rules
 iptables-restore < /etc/iptables/rules.v4 2>&1
