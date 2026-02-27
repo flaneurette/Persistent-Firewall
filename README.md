@@ -95,7 +95,7 @@ Fail2ban uses nftables by default. We don't want that anymore. So add this:
 nano /etc/fail2ban/jail.local
 ```
 
-Add below `[DEFAULT]`:
+Add below `[DEFAULT]`
 
 ```
 [DEFAULT]
@@ -103,7 +103,7 @@ banaction = iptables-multiport
 banaction_allports = iptables-allports
 ```
 
-And start using regular `iptables` again.
+Now start using regular `iptables` again.
 
 Create:
 
